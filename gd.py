@@ -26,15 +26,15 @@ def gd(func, grad, x0, numIter, stepSize):
     # begin iterations
     for iter in range(numIter):
         # compute the gradient at the current location
-        g = util.raiseNotDefined()    ### TODO: YOUR CODE HERE
+        g = grad(x)
 
 
         # compute the step size
-        eta = util.raiseNotDefined()    ### TODO: YOUR CODE HERE
+        eta = stepSize/sqrt(iter + 1)
 
 
         # step in the direction of the gradient
-        x = util.raiseNotDefined()    ### TODO: YOUR CODE HERE
+        x = x - g*eta
 
 
         # record the trajectory
@@ -43,4 +43,8 @@ def gd(func, grad, x0, numIter, stepSize):
     # return the solution
     return (x, trajectory)
 
-
+# testing code
+if __name__ == "__main__":
+    # print(gd(lambda x: x**2, lambda x: 2*x, 10, 10, 0.2))
+    x, trajectory = gd(lambda x: 0.5*x^(4)-3*x^(2)-2*x+5, lambda x: 2*x^3-6*x-2, 10, 100, 1)
+    print(trajectory)
