@@ -59,6 +59,7 @@ class AVA:
                     self.f[i][j].train(Xij, Yij) # For implementations of binary.py
 
     def predict(self, X, useZeroOne=False):
+        X = X.reshape(1, -1)
         vote = zeros((self.K,))
         for i in range(self.K):
             for j in range(i):
@@ -177,7 +178,26 @@ class MCTree:
 
             # compute the training data, store in thisX, thisY
             ### TODO: YOUR CODE HERE
-            util.raiseNotDefined()
+            #util.raiseNotDefined()
+
+            leftY = (Y == leftLabels[0])
+            for l in range(len(leftLabels)):
+                leftY = logical_or(leftY, Y == leftLabels[l])
+
+            rightY = (Y == rightLabels[0])
+            for r in range(len(rightLabels)):
+                rightY = logical_or(rightY, Y == rightLabels[r])
+
+            combined = logical_or(leftY, rightY)
+
+            thisX = X[combined]
+            thisY = Y[combined]
+
+            temp = (thisY == leftLabels[0])
+            for l in range(len(leftLabels)):
+                temp = logical_or(temp, thisY == leftLabels[l])
+
+            thisY = (2 * temp) - 1
 
             try:
                 n.getNodeInfo().fit(thisX, thisY) # For sklearn implementations
@@ -186,7 +206,21 @@ class MCTree:
 
     def predict(self, X):
         ### TODO: YOUR CODE HERE
-        util.raiseNotDefined()
+        # util.raiseNotDefined()
+        curNode = self.tree
+        while not curNode.isLeaf:
+            tmp = curNode.getNodeInfo()
+            pr = tmp.predict_proba(X.reshape(1, -1))
+            if pr[0, 1] > 0.5:
+                curNode = curNode.getLeft()
+            else:
+                curNode = curNode.getRight()
+
+        if curNode.isLeaf:
+
+            return curNode.getLabel()
+        else:
+            print('Error, we didnt reach a leaf')
 
     def predictAll(self, X):
         N,D = X.shape
@@ -197,4 +231,4 @@ class MCTree:
         
 def getMyTreeForWine():
     return makeBalancedTree(20)
-
+
